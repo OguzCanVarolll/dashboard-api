@@ -1,6 +1,7 @@
 package com.dev.dashboard.dashboard_api.service;
 
 import com.dev.dashboard.dashboard_api.dto.LoginRequest;
+import com.dev.dashboard.dashboard_api.dto.LoginResponse;
 import com.dev.dashboard.dashboard_api.dto.RegisterRequest;
 import com.dev.dashboard.dashboard_api.entity.Account;
 import com.dev.dashboard.dashboard_api.entity.Role;
@@ -15,6 +16,7 @@ public class AuthService {
 
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     public void register (RegisterRequest request){
 
@@ -33,8 +35,17 @@ public class AuthService {
         accountRepository.save(account);
     }
 
-    public void login(LoginRequest request){
-        //Todo
+    public LoginResponse login(LoginRequest request){
+       Account account = accountRepository.findByEmail(request.email())
+               .orElseThrow(()-> new RuntimeException("Kullanıcı bulunamadı."));
+
+       if(!passwordEncoder.matches(request.password(), account.getHashPassword())){
+           throw new RuntimeException("Hatalı şifre veya mail");
+       }
+
+       String token = jwtService.generateToken(account.getEmail());
+
+       return new LoginResponse(token);
     }
 
 }

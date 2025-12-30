@@ -20,18 +20,21 @@ public class SecurityConfig {
    }
 
    @Bean
-   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
        http
                .csrf(AbstractHttpConfigurer::disable)
-
+               .cors(AbstractHttpConfigurer::disable)
+               .formLogin(AbstractHttpConfigurer::disable)
+               .httpBasic(AbstractHttpConfigurer::disable)
                .authorizeHttpRequests(auth ->auth
                        .requestMatchers(
-                               "/api/v1/auth/**",
-                               "/swagger-ui/**",
-                               "/v3/api-docs/**",
-                               "/v3/api-docs.yaml",
-                               "/swagger-resources/**",
-                               "/webjars/**").permitAll()
+                           "/api/v1/auth/**",
+                           "/swagger-ui/**",
+                           "/v3/api-docs/**",
+                           "/v3/api-docs.yaml",
+                           "/swagger-resources/**",
+                           "/webjars/**"
+                       ).permitAll()
                        .anyRequest().authenticated()
                )
                .sessionManagement(session ->
