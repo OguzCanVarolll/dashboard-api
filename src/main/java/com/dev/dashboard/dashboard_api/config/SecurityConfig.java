@@ -15,15 +15,17 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
    @Bean
-   public PasswordEncoder passwordEncoder () {
-       return new BCryptPasswordEncoder();
-   }
-
-   @Bean
    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
        http
                .csrf(AbstractHttpConfigurer::disable)
-               .cors(AbstractHttpConfigurer::disable)
+               .cors(cors -> cors.configurationSource(request-> {
+                   var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
+                   corsConfiguration.setAllowedOrigins(java.util.List.of("http://localhost:5173"));
+                   corsConfiguration.setAllowedMethods(java.util.List.of("GET","POST","PUT","DELETE","OPTIONS"));
+                   corsConfiguration.setAllowedHeaders(java.util.List.of("*"));
+                   corsConfiguration.setAllowCredentials(true);
+                   return corsConfiguration;
+               }))
                .formLogin(AbstractHttpConfigurer::disable)
                .httpBasic(AbstractHttpConfigurer::disable)
                .authorizeHttpRequests(auth ->auth
