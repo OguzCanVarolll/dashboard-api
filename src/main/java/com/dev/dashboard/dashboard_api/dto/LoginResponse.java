@@ -1,6 +1,9 @@
 package com.dev.dashboard.dashboard_api.dto;
 
 public record LoginResponse(
-        String token
-) {
+        String message,
+        String token,
+        String refreshToken,
+        String username
+){
 }

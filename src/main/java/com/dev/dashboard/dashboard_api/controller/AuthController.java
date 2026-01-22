@@ -1,8 +1,9 @@
 package com.dev.dashboard.dashboard_api.controller;
 
-import com.dev.dashboard.dashboard_api.dto.LoginRequest;
 import com.dev.dashboard.dashboard_api.dto.LoginResponse;
+import com.dev.dashboard.dashboard_api.dto.LoginRequest;
 import com.dev.dashboard.dashboard_api.dto.RegisterRequest;
+import com.dev.dashboard.dashboard_api.dto.RegisterResponse;
 import com.dev.dashboard.dashboard_api.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,14 +22,14 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> register (@Valid @RequestBody RegisterRequest registerRequest){
-            authService.register(registerRequest);
-            return  new ResponseEntity<>("Register Successful", HttpStatus.CREATED);
+    public ResponseEntity<RegisterResponse> register (@Valid @RequestBody RegisterRequest registerRequest){
+        RegisterResponse response =authService.register(registerRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login (@Valid @RequestBody LoginRequest loginRequest){
-            LoginResponse response = authService.login(loginRequest);
-            return ResponseEntity.ok(response);
+        LoginResponse response = authService.login(loginRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
