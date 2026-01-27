@@ -1,15 +1,8 @@
-package com.dev.dashboard.dashboard_api.serviceTest;
+package com.dev.dashboard.dashboard_api.service;
 
 import com.dev.dashboard.dashboard_api.dto.LoginRequest;
 import com.dev.dashboard.dashboard_api.dto.LoginResponse;
-import com.dev.dashboard.dashboard_api.dto.RegisterRequest;
-import com.dev.dashboard.dashboard_api.dto.RegisterResponse;
 import com.dev.dashboard.dashboard_api.entity.Account;
-import com.dev.dashboard.dashboard_api.entity.Role;
-import com.dev.dashboard.dashboard_api.exception.EmailAlreadyExistsException;
-import com.dev.dashboard.dashboard_api.repository.AccountRepository;
-import com.dev.dashboard.dashboard_api.service.AuthService;
-import com.dev.dashboard.dashboard_api.service.JwtService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,9 +15,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

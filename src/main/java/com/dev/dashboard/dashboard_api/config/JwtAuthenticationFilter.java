@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j; // Logging için eklendi
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +20,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j // Lombok ile Logger entegrasyonu
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
@@ -40,31 +42,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        jwt = authHeader.substring(7);
-        try{
-            userEmail = jwtService.extractEmail(jwt); // JwtService'de yazdığımız metod
-        }catch (Exception e){
-            filterChain.doFilter(request,response);
-            return;
-        }
+        try {
+            jwt = authHeader.substring(7);
+            userEmail = jwtService.extractEmail(jwt);
 
-        if (SecurityContextHolder.getContext().getAuthentication() == null && jwtService.isTokenValid(jwt)) {
+            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            UserDetails userDetails;
-            try{
-                userDetails = userDetailsService.loadUserByUsername(userEmail);
-            }catch (Exception e){
-                filterChain.doFilter(request,response);
-                return;
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+
+                if (jwtService.isTokenValid(jwt)) {
+
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
+
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
             }
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    null,
-                    userDetails.getAuthorities()
-            );
-            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-            SecurityContextHolder.getContext().setAuthentication(authToken);
+        } catch (Exception e) {
+            log.error("Cannot set user authentication: {}", e.getMessage());
         }
         filterChain.doFilter(request, response);
     }

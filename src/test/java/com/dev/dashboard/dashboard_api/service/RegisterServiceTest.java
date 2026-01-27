@@ -1,12 +1,10 @@
-package com.dev.dashboard.dashboard_api.serviceTest;
+package com.dev.dashboard.dashboard_api.service;
 
 import com.dev.dashboard.dashboard_api.dto.RegisterRequest;
 import com.dev.dashboard.dashboard_api.dto.RegisterResponse;
 import com.dev.dashboard.dashboard_api.entity.Account;
 import com.dev.dashboard.dashboard_api.exception.EmailAlreadyExistsException;
 import com.dev.dashboard.dashboard_api.repository.AccountRepository;
-import com.dev.dashboard.dashboard_api.service.AuthService;
-import com.dev.dashboard.dashboard_api.service.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
