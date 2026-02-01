@@ -20,7 +20,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j // Lombok ile Logger entegrasyonu
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
@@ -50,7 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
-                if (jwtService.isTokenValid(jwt)) {
+                if (jwtService.isTokenValid(jwt,userDetails)) {
 
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
@@ -64,7 +64,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception e) {
-            log.error("Cannot set user authentication: {}", e.getMessage());
+            log.error("Güvenlik doğrulaması başarısız: ", e);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"Geçersiz veya süresi dolmuş token!\"}");
+            return;
         }
         filterChain.doFilter(request, response);
     }

@@ -40,7 +40,7 @@ public class AuthService {
         Account account = Account.builder()
                 .accountUsername(request.username())
                 .email(request.email())
-                .hashPassword(passwordEncoder.encode(request.password()))
+                .password(passwordEncoder.encode(request.password()))
                 .role(Role.USER)
                 .build();
 
@@ -58,7 +58,6 @@ public class AuthService {
                         request.password()
                 )
         );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         Account account = (Account) authentication.getPrincipal();
 

@@ -36,7 +36,7 @@ public class Account implements UserDetails {
 
     @JsonIgnore
     @Column(nullable = false)
-    private String hashPassword;
+    private String password;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -59,7 +59,7 @@ public class Account implements UserDetails {
 
     @Override
     public String getPassword() {
-        return hashPassword;
+        return password;
     }
 
     @Override

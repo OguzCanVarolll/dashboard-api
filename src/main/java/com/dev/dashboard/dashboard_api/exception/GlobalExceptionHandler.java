@@ -20,12 +20,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleBadCredentials (BadCredentialsException ex,HttpServletRequest request){
         return buildResponseEntity(
                 HttpStatus.UNAUTHORIZED,
-                "AUT_001",
+                "AUTH_001",
                 "Hatalı mail veya şifre",
                 request.getRequestURI()
         );
     }
-    // JOKER METOT: BaseException'dan türeyen TÜM hataları bu tek metot yakalar!
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<ErrorResponse> handleBaseException(BaseException ex, HttpServletRequest request) {
         log.warn("İş Mantığı Hatası [{}]: {}", ex.getErrorCode(), ex.getMessage());
@@ -53,7 +52,16 @@ public class GlobalExceptionHandler {
                 .build();
         return ResponseEntity.badRequest().body(res);
     }
-
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex, HttpServletRequest request) {
+        log.error("Beklenmeyen Hata: ", ex);
+        return buildResponseEntity(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "INTERNAL_SERVER_ERROR",
+                "Sunucu tarafında beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.",
+                request.getRequestURI()
+        );
+    }
     private ResponseEntity<ErrorResponse> buildResponseEntity(HttpStatus status, String errorCode, String message, String path) {
         ErrorResponse error = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())

@@ -24,12 +24,13 @@ public class ApplicationConfig {
         return email -> repository.findByEmail(email)
                 .orElseThrow(()-> new UsernameNotFoundException("Email bulunamadı."));
     }
-
     @Bean
-    public AuthenticationProvider authenticationProvider(){
+    public AuthenticationProvider authenticationProvider(
+            UserDetailsService userDetailsService,
+            PasswordEncoder passwordEncoder){
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder);
         return authProvider;
     }
 

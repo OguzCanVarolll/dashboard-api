@@ -1,0 +1,60 @@
+services:
+  postgres-db:
+    image: postgres:15-alpine
+    container_name: dashboard-postgres
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=dashboard_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - dashboard-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d dashboard_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  dashboard-api:
+    build: .
+    container_name: dashboard-app
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - DB_URL=${DB_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRATION=${JWT_EXPIRATION}
+      - JWT_REFRESH_EXPIRATION=${JWT_REFRESH_EXPIRATION}
+      - CORS_ALLOWED_ORIGINS=${CORS_ORIGIN}
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    networks:
+      - dashboard-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  pgdata:
+
+networks:
+  dashboard-network:
